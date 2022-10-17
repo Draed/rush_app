@@ -1,0 +1,7 @@
+{
+    "pause_every": "03:00:00",
+    "pause_duration": "00:15:00",
+    "pause_message": "Get up, go drink water and stretch a bit",
+    "database_path": "ressources/rush_database.db",
+    "rush_list_data_path": "ressources/rush_list.json"
+}
