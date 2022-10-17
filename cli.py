@@ -160,17 +160,59 @@ def StartRushQuestion():
     return start_rush
 
 def EditTaskStatusQuestion(rush_data, database_path):
-    #@ TODO
+    # getting tasks from database :
+    conn = sqlite3.connect(database_path)
+    c = conn.cursor() 
+    c.execute("SELECT * FROM task WHERE rush=?", (rush_data['id'],))
+    task_list = c.fetchall()
+    final_task_list = []
+    task_name_list = [ task[1] for task in task_list ]
+
     end_editing = False
-    # while not end
-    # 1 choose a task in task list or end
+    while not end_editing:
+        question1 = [
+            inquirer.List('end_choice', message="Edition menu ", 
+                                    choices=['Edit a task data', 'Stop with task editing']),
+        ]
+        answer1 = inquirer.prompt(question1)['end_choice']
 
-    # if end
-    # show confirm with alert (tasks not completed will be left unachieved !)
-    #end_editing = True
+        if answer1  == "Stop with task editing" :
+            print(yellow("Beware, tasks with uncompleted data will be left unachieved !"))
+            end_editing = True
+        
+        # Choose a task to edit
+        else:
+            question2 = [
+                inquirer.List('task_edition_choice', message="Choose A task to edit : ", 
+                                    choices=task_name_list),
+            ]
+            task_name = inquirer.prompt(question2)['task_edition_choice']
+            task_list_index = int(task_name_list.index(task_name))
+            
+            # show previous data for the task
+            print(yellow(str(task_name) + " current status : " + str(task_list[task_list_index][5])))
+            question3 = [
+                inquirer.Confirm('achieved', message="Does the task have been completed ?", default=True)
+            ]
+            achieved = inquirer.prompt(question3)['achieved']
 
-    # 2 edit final duration of the tasks (final_duration)
-    pass
+            if achieved:
+                # show previous data for the task
+                print(yellow(str(task_name) + " current estimated duration : " + str(task_list[task_list_index][3]) + " and current final duration " + str(task_list[task_list_index][4])))
+                question4 = [ 
+                    inquirer.Text('final_duration', message="Enter the task final duration (with format '00:00:00') ", validate=null_validate),
+                    
+                ]
+                final_duration = inquirer.prompt(question4)['final_duration']
+            else:
+                final_duration = "00:00:00"
+
+            c.execute('UPDATE task SET final_duration=?, achieved=? WHERE name=?;', (final_duration, achieved, task_name))
+
+    conn.commit()
+    conn.close()   
+
+
 
 class MenuQuestion:
 
@@ -227,8 +269,8 @@ def EndRushQuestion(rush_data, database_path):
     if not end_rush:
         # Ask what tasks have been completed
         EditTaskStatusQuestion(rush_data, database_path)
-        # @TODO End the rush right now
-        # break to quite the while waiting thread loop ?
+        # change rush status to achieved 
+        rush_data.update({"achieved" : True})
     else:
         # mean every task have been completed
         conn = sqlite3.connect(database_path)
@@ -237,3 +279,5 @@ def EndRushQuestion(rush_data, database_path):
         c.execute('UPDATE task SET achieved=? WHERE rush=?;', (True, rush_data['id']))
         conn.commit()
         conn.close()
+
+    return rush_data

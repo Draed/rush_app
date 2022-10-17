@@ -4,10 +4,6 @@ import json
 import re
 import time
 
-# def parse_time(s):
-#     hour, minute, second = re.match('(\d+):(\d+):(\d+)', s).groups()
-#     return datetime.timedelta(hours=int(hour), minutes=int(minute), seconds=int(second))
-
 def parse_time(s):
     hour, minute, second = s.split(':')
     try:
@@ -35,15 +31,3 @@ def dialogWithButton(title, text):
     result = subprocess.check_output(['osascript', '-e', script], text = True)
     #print(result.decode("utf-8"))
 
-# def countdown(sec):
-#     while sec:
-#         minn, secc = divmod(sec, 60)
-#         timeformat = '{:02d}:{:02d}'.format(minn, secc)
-#         print(timeformat, end='\r')
-#         time.sleep(1)
-#         sec -= 1
-#     print('Goodbye!\n')
-
-def twerk_thread(event):
-    input()
-    event.set()
