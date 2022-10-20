@@ -1,7 +1,7 @@
 from cli import DefineRushQuestion, StartRushQuestion, MainRushQuestion, MenuQuestion, EndRushQuestion
 from cli_color_py import red, bright_yellow, yellow, green, bold, underline, blue
 from daemon import Daemon
-from report import generate_pdf
+# from report import generate_pdf
 from database import databaseInit, databaseImport
 
 from datetime import datetime as dt

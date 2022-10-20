@@ -18,7 +18,7 @@ class Daemon:
     def run(self, rush_data, event):
         #duration = int(rush_data['duration'].strip(" hours"))
         duration = rush_data['duration'] = "3 hours"
-        duration = 0.2
+        duration = 1
         ##
         duration_in_sec = int(duration * 60)
         rush_type = rush_data['type']
@@ -38,7 +38,7 @@ class Daemon:
                 notify("[Rush notification] - Pause", "Make a quick pause (3 to 5 min) to do some stretching and physical exercises")
             # if modulo 1/4 of total time :
             if duration_in_sec % project_quarter_duration == 0 and rush_type != "Learning":
-                notify("[Rush notification] - Meeting", "Time to ")
+                notify("[Rush notification] - Meeting", "Time to do a rush meeting ! ")
                 # ProjectMeetingQuestion()
         
             time.sleep(1)

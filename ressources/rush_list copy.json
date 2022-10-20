@@ -23,5 +23,18 @@
             {"name": "Read iptable tutorial", "description": "Read iptable tutorial : https://www.hostinger.com/tutorials/iptables-tutorial", "duration": "00:45:00"},
             {"name": "Read firewall article ", "description": "Read firewall article on Frame ip : https://www.frameip.com/firewall/", "duration": "02:15:00"}
         ]
+    },
+
+    {
+        "name": "Iptables - part 2",
+        "description" : "Review the basics of iptables",
+        "type" : "POC",
+        "tag" : "network",
+        "initial_duration" : "3 hours",
+        "level" : "easy",
+        "task_list": [
+            {"name": "Read iptable tutorial", "description": "Read iptable tutorial : https://www.hostinger.com/tutorials/iptables-tutorial", "duration": "00:45:00"},
+            {"name": "Read firewall article ", "description": "Read firewall article on Frame ip : https://www.frameip.com/firewall/", "duration": "02:15:00"}
+        ]
     }
 ]

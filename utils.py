@@ -9,7 +9,7 @@ def parse_time(s):
     try:
         hour = int(hour)
         minute = int(minute)
-        second = int(second)
+        second = int(float(second))
     except ValueError:
         return "ValueError"
     

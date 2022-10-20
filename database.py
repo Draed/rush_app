@@ -35,6 +35,29 @@ def databaseInit(database_path):
     c.execute("""CREATE TABLE IF NOT EXISTS meeting 
                 (id INTEGER PRIMARY KEY AUTOINCREMENT, 
                 description TEXT,
+                time TEXT,
+                late BOOLEAN,
+                catchup_lost_time BOOLEAN,
+                catchup_lost_time_description TEXT,
+                rush INTEGER,
+                FOREIGN KEY (rush) REFERENCES rush(id)
+                );
+            """)
+    # pause
+    c.execute("""CREATE TABLE IF NOT EXISTS pause 
+                (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                reason TEXT,
+                start_time TEXT,
+                end_time TEXT,
+                duration TEXT,
+                rush INTEGER,
+                FOREIGN KEY (rush) REFERENCES rush(id)
+                );
+            """)
+    # aar
+    c.execute("""CREATE TABLE IF NOT EXISTS aar 
+                (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                description TEXT,
                 rush INTEGER,
                 FOREIGN KEY (rush) REFERENCES rush(id)
                 );

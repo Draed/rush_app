@@ -1,5 +1,7 @@
 from cli_color_py import red, bright_yellow, yellow, green, bold, underline, blue
 from database import SearchRushName, GetNotAchievedRush, GetAllRush
+from datetime import datetime as dt
+from utils import parse_time
 import inquirer
 import sqlite3
 import time
@@ -32,7 +34,7 @@ def MainRushQuestion(database_path):
             rush_list = [ rush[1] for rush in rush_list ]
             if rush_list != []:
                 questions = [
-                    inquirer.List('rush_name_choosen', message="Please choose an existing rush to start : ",
+                    inquirer.List('rush_name_choosen', message="Please choose an existing rush to start ",
                                         choices=rush_list)
                 ]
                 answer = inquirer.prompt(questions)['rush_name_choosen']
@@ -138,16 +140,42 @@ def ProjectMeetingQuestion(rush_data, database_path):
         inquirer.Confirm('show_meeting_question', message="Would you like to add a meeting report ?", default=False),
     ]
     show_meeting_question = inquirer.prompt(questions)['show_meeting_question']
+
     if show_meeting_question:
-        print(yellow("Describe the progress, blocking elements, \n achieved tasks, updated priorites \n , what is still to do ? "))
+        start_meeting_dateTime = str(dt.now())
+        # start_meeting_dateTime_str = start_meeting_dateTime.strftime('%H:%M:%S')
+        print(yellow("Describe the progress, blocking elements, achieved tasks, updated priorites, what is still to do ? "))
         question2 = [
-                inquirer.Text('description', message="Report Description : ", validate=null_validate),
+                inquirer.Text('description', message="Report Description ", validate=null_validate),
         ]
         meeting_description = inquirer.prompt(question2)['description']
+
+        late_question = [
+            inquirer.Confirm('late_question1', message="Are you late in your project estimation ?", default=False),
+        ]
+        late_response1 = inquirer.prompt(late_question)['late_question1']
+
+        if late_response1:
+            catchup_lost_time_question = [
+                inquirer.Confirm('late_question2', message="Is it possible to make up for lost time ?", default=False),
+            ]
+            catchup_lost_time = inquirer.prompt(catchup_lost_time_question)['late_question2']
+
+            if catchup_lost_time:
+                catchup_lost_time_description_question = [
+                        inquirer.Text('late_question3', message="Describe how to catch up time ? "),
+                ]
+                catchup_lost_time_description = inquirer.prompt(catchup_lost_time_description_question)['late_question3']
+            else:
+                catchup_lost_time_description = ""
+        else:
+            catchup_lost_time = ""
+            catchup_lost_time_description = ""
+        
         # add the new meeting report to the associated rush
         conn = sqlite3.connect(database_path)
         c = conn.cursor() 
-        c.execute('INSERT INTO meeting (description, rush) VALUES (?,?);', (meeting_description, int(rush_data['id'])))
+        c.execute('INSERT INTO meeting (time, late, catchup_lost_time, catchup_lost_time_description, description, rush) VALUES (?,?,?,?,?,?);', (start_meeting_dateTime, late_response1, catchup_lost_time, catchup_lost_time_description,  meeting_description, int(rush_data['id'])))
         conn.commit()
         conn.close()
     
@@ -183,7 +211,7 @@ def EditTaskStatusQuestion(rush_data, database_path):
         # Choose a task to edit
         else:
             question2 = [
-                inquirer.List('task_edition_choice', message="Choose A task to edit : ", 
+                inquirer.List('task_edition_choice', message="Choose A task to edit ", 
                                     choices=task_name_list),
             ]
             task_name = inquirer.prompt(question2)['task_edition_choice']
@@ -224,9 +252,14 @@ class MenuQuestion:
 
     def DuringRushQuestion(self, rush_data, database_path, event):
         quit_by_countdown = True
+        if rush_data['type'] == "Learning":
+            choice_list = ['', 'Show all tasks','Edit task status', 'Make a pause', 'End this rush right now']
+        else:
+            choice_list = ['', 'Show all tasks','Edit task status', 'Make a pause', 'Write a meeting report', 'End this rush right now']
+
         questions = [
             inquirer.List('during_rush', message=" What to do now ?",
-                                        choices=['', 'Show all tasks','Edit task status', 'Write a meeting report', 'End this rush right now'])
+                                        choices=choice_list)
         ]
         answers = inquirer.prompt(questions)
         if answers['during_rush'] == '' :
@@ -236,7 +269,6 @@ class MenuQuestion:
             conn = sqlite3.connect(database_path)
             c = conn.cursor()
             task_list = c.execute('SELECT * FROM task WHERE rush = ?', (rush_data['id'],)).fetchall()
-            print(task_list)
             conn.close()
             print(green("== Tasks for this rush ( " + rush_data['name'] + " ) : "))
             for task in task_list:
@@ -253,16 +285,70 @@ class MenuQuestion:
         
         elif answers['during_rush'] == 'Write a meeting report':
             ProjectMeetingQuestion(rush_data, database_path)
-                
+        
+        elif answers['during_rush'] == 'Make a pause':
+            PauseQuestion(rush_data,database_path)
         
         elif answers['during_rush'] == 'Edit task status':
             EditTaskStatusQuestion(rush_data, database_path)
         
         return quit_by_countdown 
 
+def PauseQuestion(rush_data,database_path):
+    questions = [
+        inquirer.List('pause_reason_question', message="Why are you doing a pause ?",
+                                    choices=['Drinking','Stretching', 'Physical exercises','Not productive anymore', 'Too tired', 'Other reason']),
+        inquirer.List('pause_initial_question', message="When do you start the pause ?",
+                                    choices=['Now','Enter the time'])
+    ]
+    answer = inquirer.prompt(questions)
+    answer1 = answer['pause_initial_question']
+    pause_reason = answer['pause_reason_question'] 
+
+    if answer1 == 'Now':
+        start_pause_dateTime = dt.now()
+        # start_pause_dateTime_str = start_pause_dateTime.strftime('%H:%M:%S')
+        
+    else:
+        question2 = [
+            inquirer.Text('start_pause_dateTime', message="Enter the pause start time (format 00:00:00)", validate=null_validate)
+        ]
+        start_pause_dateTime_str = inquirer.prompt(question2)['start_pause_dateTime']
+        start_pause_dateTime = parse_time(start_pause_dateTime_str)
+        start_pause_dateTime = dt(dt.now().year, dt.now().month, dt.now().day, start_pause_dateTime.seconds // 3600, start_pause_dateTime.seconds // 60 % 60, microsecond=10 )
+
+
+    question3 = [
+        inquirer.List('pause_end_question', message="When do you end the pause ?",
+                                    choices=['Now','Enter the time'])
+    ]
+    answer3 = inquirer.prompt(question3)['pause_end_question']
+
+    if answer3 == 'Now':
+        end_pause_dateTime = dt.now()
+        # end_pause_dateTime_str = end_pause_dateTime.strftime('%H:%M:%S')
+        
+    else:
+        question4 = [
+            inquirer.Text('end_pause_final_dateTime', message="Enter the pause end time (format 00:00:00)", validate=null_validate)
+        ]
+        end_pause_dateTime_str = inquirer.prompt(question4)['end_pause_final_dateTime']
+        end_pause_dateTime = parse_time(end_pause_dateTime_str)
+        end_pause_dateTime = dt(dt.now().year, dt.now().month, dt.now().day, end_pause_dateTime.seconds // 3600, end_pause_dateTime.seconds // 60 % 60, microsecond=10)
+
+
+    pause_duration = end_pause_dateTime - start_pause_dateTime 
+    # pushing pause data to database
+    conn = sqlite3.connect(database_path)
+    c = conn.cursor() 
+    c.execute('INSERT INTO pause (reason, start_time, end_time, duration, rush) VALUES (?,?,?,?,?);', (pause_reason ,start_pause_dateTime ,end_pause_dateTime ,str(pause_duration), int(rush_data['id'])))
+    conn.commit()
+    conn.close()
+
+
 def EndRushQuestion(rush_data, database_path):
     questions = [
-        inquirer.Confirm('end_rush', message="Does all tasks have been completed) ?", default=False),
+        inquirer.Confirm('end_rush', message="Does all tasks have been completed ?", default=False),
     ]
     end_rush = inquirer.prompt(questions)['end_rush']
     
@@ -275,9 +361,32 @@ def EndRushQuestion(rush_data, database_path):
         # mean every task have been completed
         conn = sqlite3.connect(database_path)
         c = conn.cursor()
-        # update task status to achieved
-        c.execute('UPDATE task SET achieved=? WHERE rush=?;', (True, rush_data['id']))
+        # get the tasks from db
+        c.execute("SELECT * from task WHERE rush=?;", (str(rush_data['id']),))
+        task_list = c.fetchall()
+        for task in task_list:
+            # update task status to achieved
+            c.execute('UPDATE task SET achieved=?, final_duration=? WHERE id=?;', (True, task[3], task[0]))
         conn.commit()
         conn.close()
+
+    aar_questions = [
+        inquirer.Confirm('aar_question1', message="Would you like to write an AAR ?", default=False),
+    ]
+    aar_answer1 = inquirer.prompt(aar_questions)['aar_question1']
+
+    if aar_answer1:
+        aar_questions_next = [
+            inquirer.Text('aar_question2', message="How was this session, efficient , productive, what was the blocking element ?", validate=null_validate)
+        ]
+        aar_description = inquirer.prompt(aar_questions_next)['aar_question2']
+    
+        # pushing pause data to database
+        conn = sqlite3.connect(database_path)
+        c = conn.cursor() 
+        c.execute('INSERT INTO aar (description, rush) VALUES (?,?);', (aar_description, int(rush_data['id'])))
+        conn.commit()
+        conn.close()
+
 
     return rush_data
