@@ -1,7 +1,7 @@
 from cli import DefineRushQuestion, StartRushQuestion, MainRushQuestion, MenuQuestion, EndRushQuestion
 from cli_color_py import red, bright_yellow, yellow, green, bold, underline, blue
 from daemon import Daemon
-# from report import generate_pdf
+from report import create_html_report, convert_html_to_pdf
 from database import databaseInit, databaseImport
 
 from datetime import datetime as dt
@@ -90,16 +90,10 @@ else:
     conn.commit()
     conn.close()
 
-
-    # generate report for this rush
-    # @TODO
-    # duration = int(rush_data['duration'].strip(" hours"))
-    # planned_end_date = start_time + datetime.timedelta(hours=duration)
-
     print("\n")
     print(blue("Generating report ...").center(shutil.get_terminal_size().columns))
-    # december = generate_sales_data(month=12)
-    # plot(data=december, filename='reports/december.png')
+    report_path = create_html_report(rush_data, settings)
+    convert_html_to_pdf(rush_data, report_path)
     print(bold(green("Rush report generated ! File is avalaible under 'reports' folder ").center(shutil.get_terminal_size().columns)))
     print("\n")
     # generate report for all previous rushes
