@@ -8,8 +8,6 @@ A terminal (pyton) app for managing rush (my IT challenge limited in time).
 
 ### TODO : 
 
-- adding question for repo path at the end
-
 - add a regex validation for dates format (00:00:00)
 - add a currently working on task automatically to count time on it
 
@@ -27,6 +25,8 @@ A terminal (pyton) app for managing rush (my IT challenge limited in time).
         - by duration
 
 ### DONE : 
+
+- adding question for repo path at the end
 
 - push last rush pdf report to rush repo
 

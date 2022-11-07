@@ -14,6 +14,12 @@ import time
 
 #     return True
 
+def duration_validate(answers, current):
+    # pattern = re.compile(r"[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]{1,3})?", re.IGNORECASE)
+    if not re.match('[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]{1,3})?', current):
+        raise errors.ValidationError('', reason='Please enter correct format (00:00:00)')
+    return True
+
 def null_validate(answers, current):
     if not current:
         raise errors.ValidationError('', reason=" Please enter a value")
@@ -114,7 +120,7 @@ def DefineRushQuestion(database_path):
                     question_task = [
                         inquirer.Text('name', message="Enter task name", validate=null_validate),
                         inquirer.Text('description', message="Enter task description", validate=null_validate),
-                        inquirer.Text('duration', message="Enter task duration (estimated with format '00:00:00') ", validate=null_validate)
+                        inquirer.Text('duration', message="Enter task duration (estimated with format '00:00:00') ", validate=duration_validate)
                     ]
                     answer_task = inquirer.prompt(question_task)
                     task_list.append(answer_task)
@@ -230,7 +236,7 @@ def EditTaskStatusQuestion(rush_data, database_path):
                 # show previous data for the task
                 print(yellow(str(task_name) + " current estimated duration : " + str(task_list[task_list_index][3]) + " and current final duration " + str(task_list[task_list_index][4])))
                 question4 = [ 
-                    inquirer.Text('final_duration', message="Enter the task final duration (with format '00:00:00') ", validate=null_validate),
+                    inquirer.Text('final_duration', message="Enter the task final duration (with format '00:00:00') ", validate=duration_validate),
                     
                 ]
                 final_duration = inquirer.prompt(question4)['final_duration']
@@ -333,7 +339,7 @@ def PauseQuestion(rush_data,database_path):
         
     else:
         question2 = [
-            inquirer.Text('start_pause_dateTime', message="Enter the pause start time (format 00:00:00)", validate=null_validate)
+            inquirer.Text('start_pause_dateTime', message="Enter the pause start time (format 00:00:00)", validate=duration_validate)
         ]
         start_pause_dateTime_str = inquirer.prompt(question2)['start_pause_dateTime']
         start_pause_dateTime = parse_time(start_pause_dateTime_str)
@@ -352,7 +358,7 @@ def PauseQuestion(rush_data,database_path):
         
     else:
         question4 = [
-            inquirer.Text('end_pause_final_dateTime', message="Enter the pause end time (format 00:00:00)", validate=null_validate)
+            inquirer.Text('end_pause_final_dateTime', message="Enter the pause end time (format 00:00:00)", validate=duration_validate)
         ]
         end_pause_dateTime_str = inquirer.prompt(question4)['end_pause_final_dateTime']
         end_pause_dateTime = parse_time(end_pause_dateTime_str)
