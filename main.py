@@ -95,6 +95,7 @@ else:
     pdf_report_path = convert_html_to_pdf(rush_data, report_path)
     print(bold(green("Rush report generated ! File is avalaible under 'reports' folder ").center(shutil.get_terminal_size().columns)))
     print("\n")
+
     # generate report for all previous rushes
     # @TODO
     print(blue("Gloabl report initialization ... ").center(shutil.get_terminal_size().columns))

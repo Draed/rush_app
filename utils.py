@@ -41,12 +41,12 @@ def update_repo_rush(settings, rush_data, pdf_report_path):
     report_name = os.path.basename(os.path.normpath(pdf_report_path))
 
     # adding the pdf to report
-    shutil.copyfile(pdf_report_path, rush_repo_path+"/reports/"+report_name)
+    shutil.copyfile(pdf_report_path, rush_repo_path+"/0_reports/"+report_name)
 
     # add/append a new line to the rush summary file :
     # | :one: | [Project Name](https://Draed.github.io)| <br> Project Description <br><br> | Start Time | End Time | Duration |
-    line = "| :" +str(rush_data['id'])+ ": | ["+str(rush_data['name'])+ "](/reports/"+report_name +") | <br> "+str(rush_data['description'])+" <br><br> | "+str(rush_data['start_time'])+" | "+str(rush_data['end_time'])+" | "+str(rush_data['real_duration'])+" | \n"
+    line = "| " +str(rush_data['id'])+ " | ["+str(rush_data['name'])+ "](/0_reports/"+report_name +") | <br> "+str(rush_data['description'])+" <br><br> | "+str(rush_data['start_time'])+" | "+str(rush_data['end_time'])+" | "+str(rush_data['real_duration'])+" | \n"
 
-    f=open(rush_repo_path+"/rush.md", "a")
+    f=open(rush_repo_path+"/readme.md", "a")
     f.write(line)
     f.close()
