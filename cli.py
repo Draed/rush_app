@@ -362,9 +362,10 @@ def EndRushQuestion(rush_data, database_path):
         # mean every task have been completed
         conn = sqlite3.connect(database_path)
         c = conn.cursor()
-        # get the tasks from db
-        c.execute("SELECT * from task WHERE rush=?;", (str(rush_data['id']),))
+        # get all unachieved tasks of this rush from db 
+        c.execute("SELECT * from task WHERE rush=? AND achieved=? ;", (str(rush_data['id']), False))
         task_list = c.fetchall()
+        # for all unachieved tasks change them as done with original estimated duration
         for task in task_list:
             # update task status to achieved
             c.execute('UPDATE task SET achieved=?, final_duration=? WHERE id=?;', (True, task[3], task[0]))

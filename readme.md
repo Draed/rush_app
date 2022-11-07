@@ -8,11 +8,6 @@ A terminal (pyton) app for managing rush (my IT challenge limited in time).
 
 ### TODO : 
 
-
-- change the final repo edit :
-    - path has change
-    - edit the line to write (adding repo path)
-
 - adding question for repo path at the end
 
 - change the end all task have been done
