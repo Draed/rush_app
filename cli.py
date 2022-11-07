@@ -29,7 +29,8 @@ def MainRushQuestion(database_path):
         try:
             conn = sqlite3.connect(database_path)
             c = conn.cursor()
-            c.execute("SELECT * FROM rush")
+            # c.execute("SELECT * FROM rush")
+            c.execute("SELECT * FROM rush WHERE achieved = ?", (False,))
             rush_list = c.fetchall()
             rush_list = [ rush[1] for rush in rush_list ]
             if rush_list != []:
@@ -56,8 +57,8 @@ def MainRushQuestion(database_path):
         rush_data = DefineRushQuestion(database_path)
         return rush_data
     elif answer == "Show all not achieved rush":
-        # rush_notachieved_list = GetNotAchievedRush(database_path)
-        rush_notachieved_list = GetAllRush(database_path)
+        rush_notachieved_list = GetNotAchievedRush(database_path)
+        # rush_notachieved_list = GetAllRush(database_path)
         if rush_notachieved_list:
             print(green("== Rush not achieved : "))
             for rush_element in rush_notachieved_list:
@@ -377,7 +378,7 @@ def EndRushQuestion(rush_data, database_path):
 
     if aar_answer1:
         aar_questions_next = [
-            inquirer.Text('aar_question2', message="How was this session, efficient , productive, what was the blocking element ?", validate=null_validate)
+            inquirer.Editor('aar_question2', message="How was this session, efficient , productive, what was the blocking element ?", validate=null_validate)
         ]
         aar_description = inquirer.prompt(aar_questions_next)['aar_question2']
     

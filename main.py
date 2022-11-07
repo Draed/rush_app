@@ -3,6 +3,7 @@ from cli_color_py import red, bright_yellow, yellow, green, bold, underline, blu
 from daemon import Daemon
 from report import create_html_report, convert_html_to_pdf
 from database import databaseInit, databaseImport
+from utils import update_repo_rush
 
 from datetime import datetime as dt
 import shutil
@@ -24,8 +25,6 @@ print(blue("loading data from setting file ... ").center(shutil.get_terminal_siz
 time.sleep(0.5)
 f = open('ressources/rush_settings.json')
 settings = json.load(f)
-# pause_every = settings['pause_every']
-# pause_duration = settings['pause_duration']
 database_path = settings['database_path']
 f.close()
 
@@ -63,7 +62,6 @@ else:
     background_daemon.start()
     print(bold(green("Daemon Started")).center(shutil.get_terminal_size().columns))
     print("\n")
-    quit_by_countdown = True
 
     # While waiting for the thread 1 to set event, ask question
     menuQuestion = MenuQuestion()
@@ -79,6 +77,7 @@ else:
     real_duration = end_dateTime - rush_data["start_time"]
     rush_data.update({"end_time" : end_dateTime})
     rush_data.update({"real_duration" : real_duration})
+    rush_data.update({"achieved" : True})
 
     # Rush end question (will push data task to database)
     EndRushQuestion(rush_data, database_path)
@@ -93,13 +92,17 @@ else:
     print("\n")
     print(blue("Generating report ...").center(shutil.get_terminal_size().columns))
     report_path = create_html_report(rush_data, settings)
-    convert_html_to_pdf(rush_data, report_path)
+    pdf_report_path = convert_html_to_pdf(rush_data, report_path)
     print(bold(green("Rush report generated ! File is avalaible under 'reports' folder ").center(shutil.get_terminal_size().columns)))
     print("\n")
     # generate report for all previous rushes
     # @TODO
     print(blue("Gloabl report initialization ... ").center(shutil.get_terminal_size().columns))
-    # generate_pdf(database_path)
     print(bold(green("Global report generated ! File is avalaible under 'reports' folder ").center(shutil.get_terminal_size().columns)))
     print("\n")
 
+    # push last data to project repo
+    update_repo_rush(settings, rush_data, pdf_report_path)
+    print(blue("Pushing reports to portofolio ... ").center(shutil.get_terminal_size().columns))
+    print(bold(green("Portofolio content updated !").center(shutil.get_terminal_size().columns)))
+    print("\n")

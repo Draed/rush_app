@@ -203,7 +203,7 @@ def create_html_report(rush_data, settings):
                                     td(task[1])
                                     td(task[2])
                                     td(task[3])
-                                    td(task[4])
+                                    td(str(task[4]))
 
     # page 2
     with timeline_page.head:
@@ -329,4 +329,5 @@ def convert_html_to_pdf(rush_data, report_path):
     date = date.strftime('%d-%b-%Y')
     pdf_report_path = "output/reports/pdf/report_" + rush_id + "_" + date +".pdf"    
     pdfkit.from_file(report_path, pdf_report_path, {'enable-local-file-access': True})
+    return pdf_report_path
 

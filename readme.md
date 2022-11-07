@@ -8,6 +8,27 @@ A terminal (pyton) app for managing rush (my IT challenge limited in time).
 
 ### TODO : 
 
+
+- change the final repo edit :
+    - path has change
+    - edit the line to write (adding repo path)
+
+- adding question for repo path at the end
+
+- change the end all task have been done
+
+- add an option "show me data" which show :
+    - rush start time
+    - rush time available
+    - estimated rush end time
+    - last pause (was for "name" at "time")
+    - ration : task done / total task
+
+- add a regex validation for dates format (00:00:00)
+- add a currently working on task automatically to count time on it
+
+- make the endtime equal to rush endtime if not "end this rush right now"
+
 - add achieved datetime for task
 - graph achieved task per hour
 
@@ -48,6 +69,7 @@ A terminal (pyton) app for managing rush (my IT challenge limited in time).
 - notifier for pause,coffee,physical activity, advancement report
 - store each rush data on sqlite database
 - scrum meeting feature
+- add a notification at the end 
 
 
 ### Backlogs : 
