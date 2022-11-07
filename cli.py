@@ -393,6 +393,19 @@ def EndRushQuestion(rush_data, database_path):
         conn.commit()
         conn.close()
 
+    path_questions = [
+        inquirer.Confirm('path_question1', message="Have you a folder in rush repo to refer ?", default=False),
+    ]
+    path_answer1 = inquirer.prompt(path_questions)['path_question1']
+
+    if path_answer1:
+        path_questions2 = [
+        inquirer.Path('path_question2', message="Please, enter the path to the markdown file (ex: 6_Virtualization/docker/docker_lab2/docker_lab_2.md)", path_type=inquirer.Path.FILE,),
+    ]
+    path_answer2 = inquirer.prompt(path_questions2)['path_question2']
+    rush_data.update({"markdown_path" : path_answer2})
+
+
     aar_questions = [
         inquirer.Confirm('aar_question1', message="Would you like to write an AAR ?", default=False),
     ]

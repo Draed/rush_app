@@ -80,7 +80,8 @@ else:
     rush_data.update({"achieved" : True})
 
     # Rush end question (will push data task to database)
-    EndRushQuestion(rush_data, database_path)
+    new_rush_data = EndRushQuestion(rush_data, database_path)
+    markdown_path = new_rush_data['markdown_path']
 
     # update rush's info
     conn = sqlite3.connect(database_path)
@@ -103,7 +104,7 @@ else:
     print("\n")
 
     # push last data to project repo
-    update_repo_rush(settings, rush_data, pdf_report_path)
+    update_repo_rush(settings, rush_data, pdf_report_path, markdown_path)
     print(blue("Pushing reports to portofolio ... ").center(shutil.get_terminal_size().columns))
     print(bold(green("Portofolio content updated !").center(shutil.get_terminal_size().columns)))
     print("\n")

@@ -33,20 +33,23 @@ def dialogWithButton(title, text):
     result = subprocess.check_output(['osascript', '-e', script], text = True)
     #print(result.decode("utf-8"))
 
-def update_repo_rush(settings, rush_data, pdf_report_path):
+def update_repo_rush(settings, rush_data, pdf_report_path, markdown_path):
     """update rush data on my git repo """
 
     # /Users/dreadper/Git/2_Public_work/Draed
     rush_repo_path = settings['rush_repo_path']
     report_name = os.path.basename(os.path.normpath(pdf_report_path))
 
+    markdown_name = os.path.basename(os.path.normpath(markdown_path))
+
     # adding the pdf to report
     shutil.copyfile(pdf_report_path, rush_repo_path+"/0_reports/"+report_name)
 
     # add/append a new line to the rush summary file :
-    # | :one: | [Project Name](https://Draed.github.io)| <br> Project Description <br><br> | Start Time | End Time | Duration |
-    line = "| " +str(rush_data['id'])+ " | ["+str(rush_data['name'])+ "](/0_reports/"+report_name +") | <br> "+str(rush_data['description'])+" <br><br> | "+str(rush_data['start_time'])+" | "+str(rush_data['end_time'])+" | "+str(rush_data['real_duration'])+" | \n"
+    # | :one: | [Project Name](https://Draed.github.io)| <br> Project Description <br><br> | Repo | Start Time | End Time | Duration |
+    line = "| " +str(rush_data['id'])+ " | ["+str(rush_data['name'])+ "](0_reports/"+report_name +") | <br> "+str(rush_data['description'])+" <br><br> | [" + str(markdown_name) + "](" + str(markdown_path) + ") | " +str(rush_data['start_time'])+" | "+str(rush_data['end_time'])+" | "+str(rush_data['real_duration'])+" | \n"
 
     f=open(rush_repo_path+"/readme.md", "a")
     f.write(line)
     f.close()
+    

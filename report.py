@@ -51,7 +51,6 @@ def create_html_report(rush_data, settings):
 
     # get data from settings
     database_path = settings['database_path']
-    user = settings['user']
 
     # get data from database
     conn = sqlite3.connect(database_path)
@@ -109,7 +108,7 @@ def create_html_report(rush_data, settings):
     # plt.subplot(133)
     # plt.plot(names, values)
     # plt.suptitle('Task Charts')
-    plt.savefig('output/plots/test.png')
+    plt.savefig('output/plots/plot1.png')
     
 
     doc = dominate.document(title='Rush report : ' + rush_data[1])
@@ -186,7 +185,7 @@ def create_html_report(rush_data, settings):
                     h3("Graphs : ", cls="graphs-head")
                 with div(cls="pure-u-1-2", style="width:45%; display: inline-block;"):
                     # with div(cls="l-box"):
-                    img(src="/Users/dreadper/Git/1_Private_work/1_1_my_tools/rush_app/output/plots/test.png", width="1000px", height="350px")
+                    img(src="/Users/dreadper/Git/1_Private_work/1_1_my_tools/rush_app/output/plots/plot1.png", width="1000px", height="350px")
             with div(id="tasks", cls="tasks pure-g"):
                 with div(cls="pure-u-1"):
                     h3("Tasks :", cls="tasks-head")
