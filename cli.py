@@ -1,6 +1,7 @@
 from cli_color_py import red, bright_yellow, yellow, green, bold, underline, blue
 from database import SearchRushName, GetNotAchievedRush, GetAllRush
 from datetime import datetime as dt
+from datetime import timedelta
 from utils import parse_time
 import inquirer
 import sqlite3
@@ -254,9 +255,9 @@ class MenuQuestion:
     def DuringRushQuestion(self, rush_data, database_path, event):
         quit_by_countdown = True
         if rush_data['type'] == "Learning":
-            choice_list = ['', 'Show all tasks','Edit task status', 'Make a pause', 'End this rush right now']
+            choice_list = ['', 'Show all tasks', 'Edit task status', 'Show me current data of this rush', 'Make a pause', 'End this rush right now']
         else:
-            choice_list = ['', 'Show all tasks','Edit task status', 'Make a pause', 'Write a meeting report', 'End this rush right now']
+            choice_list = ['', 'Show all tasks', 'Edit task status', 'Show me current data of this rush', 'Make a pause', 'Write a meeting report', 'End this rush right now']
 
         questions = [
             inquirer.List('during_rush', message=" What to do now ?",
@@ -274,6 +275,26 @@ class MenuQuestion:
             print(green("== Tasks for this rush ( " + rush_data['name'] + " ) : "))
             for task in task_list:
                 print(green("=  ✧ " + str(task[1]) + " : " + str(task[2])))
+
+        if answers['during_rush'] == 'Show me current data of this rush' : 
+            conn = sqlite3.connect(database_path)
+            c = conn.cursor()
+            task_list = c.execute('SELECT * FROM task WHERE rush = ?', (rush_data['id'],)).fetchall()
+            last_pause = c.execute('SELECT * FROM pause WHERE rush = ? ORDER BY start_time DESC LIMIT 1', (rush_data['id'],)).fetchone()
+            
+            # apply filter on task list to get achieved one and not achieved :
+            achieved_task = len(list(filter(lambda task: task[5] == 1, task_list)))
+            unachieved_task = len(list(filter(lambda task: task[5] == 0, task_list)))
+            initial_duration = int(rush_data['initial_duration'].strip(" hours"))
+            estimated_end_time = rush_data['start_time'] + timedelta(hours = initial_duration)
+            time_available = estimated_end_time - dt.now()
+            print(green("== Data for this rush ( " + rush_data['name'] + " ) : "))
+            print(green("=  ✧ Rush started at : " + str(rush_data['start_time']) ))
+            print(green("=  ✧ Rush ending estimated at : " + str(estimated_end_time) ))
+            print(green("=  ✧ time available before rush end : " + str(time_available) ))
+            print(green("=  ✧ Tasks achieved : " + str(achieved_task)+ "/" + str(unachieved_task) ))
+            if last_pause:
+                print(green("=  ✧ Last pause was at : " + str(last_pause[2]) + " for the reason : " + str(last_pause[1]) ))
 
         if answers['during_rush'] == 'End this rush right now' :
             question_confirm = [

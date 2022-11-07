@@ -10,14 +10,7 @@ A terminal (pyton) app for managing rush (my IT challenge limited in time).
 
 - adding question for repo path at the end
 
-- change the end all task have been done
 
-- add an option "show me data" which show :
-    - rush start time
-    - rush time available
-    - estimated rush end time
-    - last pause (was for "name" at "time")
-    - ration : task done / total task
 
 - add a regex validation for dates format (00:00:00)
 - add a currently working on task automatically to count time on it
@@ -38,6 +31,15 @@ A terminal (pyton) app for managing rush (my IT challenge limited in time).
         - by duration
 
 ### DONE : 
+
+- add an option "show me data" which show :
+    - rush start time
+    - rush time available
+    - estimated rush end time
+    - last pause (was for "name" at "time")
+    - ration : task done / total task
+
+- change the end all task have been done
 
 - generate pdf report for each rush : 
     - estimated time
