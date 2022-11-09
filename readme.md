@@ -10,8 +10,7 @@ A terminal (pyton) app for managing rush (my IT challenge limited in time).
 
 <!-- - make the endtime equal to rush endtime if not "end this rush right now" -->
 
-- add start_time for task
-- add end_time for task
+
 - add a currently working on task automatically to count time on it
 
 - graph achieved task per hour
@@ -25,6 +24,9 @@ A terminal (pyton) app for managing rush (my IT challenge limited in time).
         - by duration
 
 ### DONE : 
+
+- add start_time for task
+- add end_time for task
 
 - add a regex validation for dates format (00:00:00)
 
