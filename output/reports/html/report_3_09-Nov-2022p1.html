@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Rush report : Docker - Back to basics </title>
+    <style>
+            body {
+                font-family: Helvetica, Arial, sans-serif;
+            }
+
+            #header a {line-height: 1.8;}
+
+            .container {position: relative;}
+
+            #task_table {
+                font-family: Helvetica, Arial, sans-serif;
+                border-collapse: collapse;
+                width: 100%;
+            }
+
+            #task_table td, #task_table th {
+                border: 1px solid #ddd;
+                padding: 8px;
+            }
+
+            #task_table tr:nth-child(even){background-color: #f2f2f2;}
+
+            #task_table tr:hover {background-color: #ddd;}
+
+            #task_table th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #04AA6D;
+            color: white;
+            }
+
+            </style>
+  </head>
+  <body>
+    <div class="l-content" id="pdf_header">
+      <div id="header" style="padding: 1%; color: white; background: #04AA6D; border: 1px solid #ddd; border-radius: 4px;">
+        <div class="" id="header-center" style="width: 100%; display: inline-block;">
+          <h1>Report for rush : Docker - Back to basics </h1>
+        </div>
+        <div class="" id="header-left" style="display: inline-block; width: 65%;">
+          <b>Tag : </b>
+          <a>system</a><br>
+          <b>Type : </b>
+          <a>Learning</a><br>
+          <b>Estimated duration : </b>
+          <a>3 hours</a>
+        </div>
+        <div class="" id="header-right" style="display: inline-block; width: 34%;">
+          <b>Start at : </b>
+          <a>2022-11-09 12:19:46.164208</a><br>
+          <b>End at : </b>
+          <a>2022-11-09 12:19:49.280567</a><br>
+          <b>Duration : </b>
+          <a>0:00:03.116359</a>
+        </div>
+      </div>
+    </div>
+    <div class="l-content" id="pdf_centent">
+      <div class="description" id="description">
+        <div class="">
+          <h3 class="description-head">Description : </h3>
+          <p style="display: inline-block; width: 99%;">Re-learning docker basic component</p>
+        </div>
+      </div>
+      <div class="graph pure-g" id="graph">
+        <div class="pure-u-1">
+          <h3 class="graphs-head">Graphs : </h3>
+        </div>
+        <div class="pure-u-1-2" style="width:45%; display: inline-block;">
+          <img height="350px" src="/Users/dreadper/Git/1_Private_work/1_1_my_tools/rush_app/output/plots/plot1.png" width="1000px">
+        </div>
+      </div>
+      <div class="tasks pure-g" id="tasks">
+        <div class="pure-u-1">
+          <h3 class="tasks-head">Tasks :</h3>
+          <table class="pure-table" id="task_table">
+            <thead>
+              <tr>
+                <th>Task name</th>
+                <th>Description</th>
+                <th>Estimated duration </th>
+                <th>Real duration</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="pure-table-odd">
+                <td>Docker overview</td>
+                <td>Read the docker overview from official documentation (https://docs.docker.com/get-started/overview/)</td>
+                <td>00:15:00</td>
+                <td>01:00:00</td>
+              </tr>
+              <tr class="pure-table-odd">
+                <td>What is a container</td>
+                <td>Watch presentation of Liz Rice (https://www.youtube.com/watch?v=8fi7uSYlOdc) to trully understand container </td>
+                <td>00:45:00</td>
+                <td>00:45:00</td>
+              </tr>
+              <tr class="pure-table-odd">
+                <td>linux filesystem</td>
+                <td>Get in deep with linux filesystem and get a fresh reminder on how they work (https://likegeeks.com/linux-file-system/)</td>
+                <td>00:15:00</td>
+                <td>00:15:00</td>
+              </tr>
+              <tr class="pure-table-odd">
+                <td>docker rootless mode</td>
+                <td>How rootless mode work : (https://medium.com/@tonistiigi/experimenting-with-rootless-docker-416c9ad8c0d6)</td>
+                <td>00:30:00</td>
+                <td>00:30:00</td>
+              </tr>
+              <tr class="pure-table-odd">
+                <td>docker vs lxc </td>
+                <td> docker vs lxc comparison : (https://earthly.dev/blog/lxc-vs-docker/)</td>
+                <td>01:00:00</td>
+                <td>01:00:00</td>
+              </tr>
+              <tr class="pure-table-odd">
+                <td>syscall reminder </td>
+                <td> quick reminder on  how syscall works : (https://en.wikipedia.org/wiki/System_call)</td>
+                <td>00:15:00</td>
+                <td>00:15:00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

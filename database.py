@@ -24,6 +24,8 @@ def databaseInit(database_path):
                 (id INTEGER PRIMARY KEY AUTOINCREMENT, 
                 name TEXT,
                 description TEXT,
+                start_time TEXT,
+                end_time TEXT,
                 duration TEXT,
                 final_duration TEXT,
                 achieved BOOLEAN,

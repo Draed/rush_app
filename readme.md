@@ -8,12 +8,12 @@ A terminal (pyton) app for managing rush (my IT challenge limited in time).
 
 ### TODO : 
 
-- add a regex validation for dates format (00:00:00)
+<!-- - make the endtime equal to rush endtime if not "end this rush right now" -->
+
+- add start_time for task
+- add end_time for task
 - add a currently working on task automatically to count time on it
 
-- make the endtime equal to rush endtime if not "end this rush right now"
-
-- add achieved datetime for task
 - graph achieved task per hour
 
 - generate global report for all rush : 
@@ -25,6 +25,8 @@ A terminal (pyton) app for managing rush (my IT challenge limited in time).
         - by duration
 
 ### DONE : 
+
+- add a regex validation for dates format (00:00:00)
 
 - adding question for repo path at the end
 

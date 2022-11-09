@@ -67,7 +67,7 @@ def create_html_report(rush_data, settings):
 
     for task in task_list:
         # get the total time with all task : 
-        total_task_time += parse_time(task[3])
+        total_task_time += parse_time(task[5])
 
     total_task_time = total_task_time.total_seconds()// 60
     ## pause data
@@ -201,8 +201,8 @@ def create_html_report(rush_data, settings):
                                 with tr(cls="pure-table-odd"):
                                     td(task[1])
                                     td(task[2])
-                                    td(task[3])
-                                    td(str(task[4]))
+                                    td(task[5])
+                                    td(str(task[6]))
 
     # page 2
     with timeline_page.head:

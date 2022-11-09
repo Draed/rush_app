@@ -17,7 +17,6 @@ if __name__ == "__main__":
         c = conn.cursor()
         achieved_rush = c.execute("SELECT * FROM rush WHERE achieved = ?", (True,)).fetchall()
     
-    
     # get all rush id with list comprehension instead of classic list
     achieved_rush_id_list = []
     achieved_rush_id_list = [ achieved_rush_id_list.append(achieved_rush[i][0]) for i,v in enumerate(achieved_rush) ]

@@ -39,9 +39,10 @@ def update_repo_rush(settings, rush_data, pdf_report_path, markdown_path):
     # /Users/dreadper/Git/2_Public_work/Draed
     rush_repo_path = settings['rush_repo_path']
     report_name = os.path.basename(os.path.normpath(pdf_report_path))
-
-    markdown_name = os.path.basename(os.path.normpath(markdown_path))
-
+    if markdown_path:
+        markdown_name = os.path.basename(os.path.normpath(markdown_path))
+    else:
+        markdown_name = "No repo"
     # adding the pdf to report
     shutil.copyfile(pdf_report_path, rush_repo_path+"/0_reports/"+report_name)
 

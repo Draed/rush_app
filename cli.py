@@ -4,8 +4,10 @@ from datetime import datetime as dt
 from datetime import timedelta
 from utils import parse_time
 import inquirer
+from inquirer import errors
 import sqlite3
 import time
+import re
 
 
 # def phone_validation(answers, current):
@@ -14,9 +16,12 @@ import time
 
 #     return True
 
+
+
 def duration_validate(answers, current):
-    # pattern = re.compile(r"[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]{1,3})?", re.IGNORECASE)
-    if not re.match('[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]{1,3})?', current):
+    # print
+    # pattern = re.compile(r"^(0?[0-9]|1[0-9]|2[0-3]):(0?[0-9]|1[0-9]|2[0-3])+:(0?[0-9]|1[0-9]|2[0-3])+$", re.IGNORECASE)
+    if not re.match('^[0-2][0-9]:[0-2][0-9]:[0-2][0-9]+$', current):
         raise errors.ValidationError('', reason='Please enter correct format (00:00:00)')
     return True
 
@@ -226,7 +231,7 @@ def EditTaskStatusQuestion(rush_data, database_path):
             task_list_index = int(task_name_list.index(task_name))
             
             # show previous data for the task
-            print(yellow(str(task_name) + " current status : " + str(task_list[task_list_index][5])))
+            print(yellow( "Task : " + str(task_name) + " current status : " + str(task_list[task_list_index][7])))
             question3 = [
                 inquirer.Confirm('achieved', message="Does the task have been completed ?", default=True)
             ]
@@ -234,16 +239,51 @@ def EditTaskStatusQuestion(rush_data, database_path):
 
             if achieved:
                 # show previous data for the task
-                print(yellow(str(task_name) + " current estimated duration : " + str(task_list[task_list_index][3]) + " and current final duration " + str(task_list[task_list_index][4])))
-                question4 = [ 
-                    inquirer.Text('final_duration', message="Enter the task final duration (with format '00:00:00') ", validate=duration_validate),
-                    
+                print(yellow( "Task : " + str(task_name) + " current estimated duration : " + str(task_list[task_list_index][5]) + " and current final duration " + str(task_list[task_list_index][6])))
+                question3_1 = [
+                    inquirer.Confirm('achieved', message="Do you want to change these data ?", default=True)
                 ]
-                final_duration = inquirer.prompt(question4)['final_duration']
+                achieved2 = inquirer.prompt(question3_1)['achieved']
+
+                if achieved2:
+                    question3_2 = [ 
+                        inquirer.List('duration_or_start', message="Do you want to enter the start and end time or the duration ?"
+                        ,choices=['Duration', 'Start and End time'],),
+                        
+                    ]
+                    final_duration_choice = inquirer.prompt(question3_2)['duration_or_start']
+                
+                    if final_duration_choice == 'Start and End time':
+                        question3_3 = [
+                            inquirer.Text('task_start_time', message="Enter the task start time (format 00:00:00)", validate=duration_validate),
+                            inquirer.Text('task_end_time', message="Enter the task end time (format 00:00:00)", validate=duration_validate)
+
+                        ]
+                        task_dateTime_str = inquirer.prompt(question3_3)
+                        task_start_dateTime_str = task_dateTime_str['task_start_time']
+                        task_start_dateTime = parse_time(task_start_dateTime_str)
+                        task_start_dateTime = dt(dt.now().year, dt.now().month, dt.now().day, task_start_dateTime.seconds // 3600, task_start_dateTime.seconds // 60 % 60, microsecond=10)
+
+                        task_end_dateTime_str = task_dateTime_str['task_end_time']
+                        task_end_dateTime = parse_time(task_end_dateTime_str)
+                        task_end_dateTime = dt(dt.now().year, dt.now().month, dt.now().day, task_end_dateTime.seconds // 3600, task_end_dateTime.seconds // 60 % 60, microsecond=10)
+                        final_duration = task_end_dateTime - task_start_dateTime
+
+                    else: 
+                        
+                        question4 = [ 
+                            inquirer.Text('final_duration', message="Enter the task final duration (with format '00:00:00') ", validate=duration_validate),
+                            
+                        ]
+                        final_duration = inquirer.prompt(question4)['final_duration']
+                        task_start_dateTime = None
+                        task_end_dateTime = None
             else:
                 final_duration = "00:00:00"
+                task_start_dateTime = None
+                task_end_dateTime = None
 
-            c.execute('UPDATE task SET final_duration=?, achieved=? WHERE name=?;', (final_duration, achieved, task_name))
+            c.execute('UPDATE task SET start_time=?, end_time=?, final_duration=?, achieved=? WHERE name=?;', (task_start_dateTime, task_end_dateTime, final_duration, achieved, task_name))
 
     conn.commit()
     conn.close()   
@@ -280,6 +320,7 @@ class MenuQuestion:
             conn.close()
             print(green("== Tasks for this rush ( " + rush_data['name'] + " ) : "))
             for task in task_list:
+                # show task name and description 
                 print(green("=  ✧ " + str(task[1]) + " : " + str(task[2])))
 
         if answers['during_rush'] == 'Show me current data of this rush' : 
@@ -289,8 +330,8 @@ class MenuQuestion:
             last_pause = c.execute('SELECT * FROM pause WHERE rush = ? ORDER BY start_time DESC LIMIT 1', (rush_data['id'],)).fetchone()
             
             # apply filter on task list to get achieved one and not achieved :
-            achieved_task = len(list(filter(lambda task: task[5] == 1, task_list)))
-            unachieved_task = len(list(filter(lambda task: task[5] == 0, task_list)))
+            achieved_task = len(list(filter(lambda task: task[7] == 1, task_list)))
+            unachieved_task = len(list(filter(lambda task: task[7] == 0, task_list)))
             initial_duration = int(rush_data['initial_duration'].strip(" hours"))
             estimated_end_time = rush_data['start_time'] + timedelta(hours = initial_duration)
             time_available = estimated_end_time - dt.now()
@@ -395,7 +436,7 @@ def EndRushQuestion(rush_data, database_path):
         # for all unachieved tasks change them as done with original estimated duration
         for task in task_list:
             # update task status to achieved
-            c.execute('UPDATE task SET achieved=?, final_duration=? WHERE id=?;', (True, task[3], task[0]))
+            c.execute('UPDATE task SET achieved=?, final_duration=? WHERE id=?;', (True, task[5], task[0]))
         conn.commit()
         conn.close()
 
@@ -407,10 +448,11 @@ def EndRushQuestion(rush_data, database_path):
     if path_answer1:
         path_questions2 = [
         inquirer.Path('path_question2', message="Please, enter the path to the markdown file (ex: 6_Virtualization/docker/docker_lab2/docker_lab_2.md)", path_type=inquirer.Path.FILE,),
-    ]
-    path_answer2 = inquirer.prompt(path_questions2)['path_question2']
-    rush_data.update({"markdown_path" : path_answer2})
-
+        ]
+        path_answer2 = inquirer.prompt(path_questions2)['path_question2']
+        rush_data.update({"markdown_path" : path_answer2})
+    else:
+        rush_data.update({"markdown_path" : None})
 
     aar_questions = [
         inquirer.Confirm('aar_question1', message="Would you like to write an AAR ?", default=False),
@@ -419,7 +461,7 @@ def EndRushQuestion(rush_data, database_path):
 
     if aar_answer1:
         aar_questions_next = [
-            inquirer.Editor('aar_question2', message="How was this session, efficient , productive, what was the blocking element ?", validate=null_validate)
+            inquirer.Text('aar_question2', message="How was this session, efficient , productive, what was the blocking element ?", validate=null_validate)
         ]
         aar_description = inquirer.prompt(aar_questions_next)['aar_question2']
     
