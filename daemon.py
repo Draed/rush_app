@@ -42,7 +42,7 @@ class Daemon:
                     notify("[Rush notification] - Pause", "Make a quick pause (3 to 5 min) to do some stretching and physical exercises")
 
             # if modulo 1/4 of total time :
-            if duration_in_sec % project_quarter_duration == 0 and rush_type != "Learning":
+            if duration_in_sec % project_quarter_duration == 0 and duration_in_sec < initial_duration-60 and rush_type != "Learning":
                 notify("[Rush notification] - Meeting", "Time to do a rush meeting ! ")
                 # ProjectMeetingQuestion()
         

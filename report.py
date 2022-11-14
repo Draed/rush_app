@@ -12,13 +12,13 @@ import math
 def create_timeline(rush_data,settings):
 
     database_path = settings['database_path']
-    rush_id = str(rush_data[0])
+    rush_id = rush_data[0]
     conn = sqlite3.connect(database_path)
     timeline_ordered_list = []
     
     c = conn.cursor() 
     ## rush data
-    rush_data = c.execute('SELECT * FROM rush WHERE id=?;', (rush_id)).fetchone()
+    rush_data = c.execute('SELECT * FROM rush WHERE id=?;', (rush_id,)).fetchone()
     start_time = rush_data[7]
     start_event = {
         "time" : start_time,
@@ -33,13 +33,13 @@ def create_timeline(rush_data,settings):
         "description" : "",
     }
     timeline_ordered_list.append(end_event)
-    meeting_list = c.execute('SELECT * FROM meeting WHERE rush=?;', (rush_id)).fetchall()
+    meeting_list = c.execute('SELECT * FROM meeting WHERE rush=?;', (rush_id,)).fetchall()
     meeting_list = list(map(lambda data: {"time" : data[2], "title" : "meeting", "description" : data[1]},meeting_list))
     timeline_ordered_list.extend(meeting_list)
-    pause_list = c.execute('SELECT * FROM pause WHERE rush=?;', (rush_id)).fetchall()
+    pause_list = c.execute('SELECT * FROM pause WHERE rush=?;', (rush_id,)).fetchall()
     pause_list = list(map(lambda data: {"time" : data[2], "title" : "pause", "description" : data[1]}, pause_list))
     timeline_ordered_list.extend(pause_list)
-    # event_list = c.execute('SELECT pause.rush as rush1, meeting.rush as rush2, reason, start_time, description, time FROM pause JOIN meeting ON pause.rush=meeting.rush WHERE rush1=? GROUP BY rush1 ORDER BY start_time ;', (rush_id)).fetchall()
+    # event_list = c.execute('SELECT pause.rush as rush1, meeting.rush as rush2, reason, start_time, description, time FROM pause JOIN meeting ON pause.rush=meeting.rush WHERE rush1=? GROUP BY rush1 ORDER BY start_time ;', (rush_id,)).fetchall()
     conn.commit()
     conn.close()
 
@@ -55,14 +55,14 @@ def create_html_report(rush_data, settings):
     # get data from database
     conn = sqlite3.connect(database_path)
     c = conn.cursor()        
-    rush_id = str(rush_data['id'])
+    rush_id = rush_data[0]
     ## rush data
-    rush_data = c.execute('SELECT * FROM rush WHERE id=?;', (rush_id)).fetchone()
+    rush_data = c.execute('SELECT * FROM rush WHERE id=?;', (rush_id,)).fetchone()
     ## task data
-    task_list = c.execute('SELECT * FROM task WHERE rush=?;', (rush_id)).fetchall()
+    task_list = c.execute('SELECT * FROM task WHERE rush=?;', (rush_id,)).fetchall()
     achieved_task_number = c.execute("SELECT COUNT(achieved) FROM task WHERE rush=? AND achieved=?", (rush_id, True)).fetchone()
     not_achieved_task_number = c.execute("SELECT COUNT(achieved) FROM task WHERE rush=? AND achieved=?", (rush_id, False)).fetchone()
-    total_task_number = c.execute("SELECT COUNT(achieved) FROM task WHERE rush=?", (rush_id)).fetchone()
+    # total_task_number = c.execute("SELECT COUNT(achieved) FROM task WHERE rush=?", (rush_id,)).fetchone()
     total_task_time = datetime.timedelta(seconds=0)
 
     for task in task_list:
@@ -71,14 +71,14 @@ def create_html_report(rush_data, settings):
 
     total_task_time = total_task_time.total_seconds()// 60
     ## pause data
-    pause_list = c.execute('SELECT * FROM pause WHERE rush=?;', (rush_id)).fetchall()
+    pause_list = c.execute('SELECT * FROM pause WHERE rush=?;', (rush_id,)).fetchall()
     total_pause_time = datetime.timedelta(seconds=0)
     for pause in pause_list:
         total_pause_time += parse_time(pause[4])
     total_pause_time = total_pause_time.total_seconds()// 60
 
     ## aar data
-    aar_data = c.execute('SELECT * FROM aar WHERE rush=?;', (rush_id)).fetchone()
+    aar_data = c.execute('SELECT * FROM aar WHERE rush=?;', (rush_id,)).fetchone()
 
     ## duration data :
     # rush
@@ -91,16 +91,22 @@ def create_html_report(rush_data, settings):
     # creating plot / graphs :
     graph_colors = ["#04aa6d","#aa0441", "#025f3d", "#03784d", "#03915d", "#04aa6d", "#05c37d", "#05dc8d", "#06f59d"]
     # Graph 1 : achieved task graph
-    plt.figure(figsize=(6, 2))
-    # subplot 1 : task achieved bar
-    task_achieved_name = ['achieved task', 'unachieved task']
-    task_achieved_name_value = [achieved_task_number[0], not_achieved_task_number[0]]
+    plt.figure(figsize=(12, 5))
+    plt.grid(False)
+
+    #subplot 1 : task achieved bar
     plt.subplot(121)
+    plt.title('tasks status')
+    task_achieved_name_value = [int(achieved_task_number[0]), int(not_achieved_task_number[0])]
+    print(task_achieved_name_value)
+    task_achieved_name = ["achieved task", "unachieved task"]
     plt.pie(task_achieved_name_value, labels=task_achieved_name, colors=graph_colors, rotatelabels=True, wedgeprops = {'linewidth': 3})
+    
     # subplot 2 : time managing
+    plt.subplot(122)
+    plt.title('time managing')
     time_value = [total_task_time, total_pause_time]
     time_label = ["work time", "pause time"]
-    plt.subplot(122)
     plt.pie(time_value, labels=time_label, colors=graph_colors, rotatelabels=True, wedgeprops = {'linewidth': 3})
 
     # Graph 3 : Average time (duration) per task
@@ -108,13 +114,13 @@ def create_html_report(rush_data, settings):
     # plt.subplot(133)
     # plt.plot(names, values)
     # plt.suptitle('Task Charts')
-    plt.savefig('output/plots/plot1.png')
-    
+    plt.savefig("output/plots/plot1.png")
 
-    doc = dominate.document(title='Rush report : ' + rush_data[1])
+    doc = dominate.document(title='Rush report : ' + str(rush_data[1]))
     timeline_page = dominate.document()
     date = datetime.datetime.now()
     date = date.strftime('%d-%b-%Y')
+
 
     # page 1
     with doc.head:
@@ -156,36 +162,36 @@ def create_html_report(rush_data, settings):
         with div(id="pdf_header", cls="l-content"):
             with div(id="header", style="padding: 1%; color: white; background: #04AA6D; border: 1px solid #ddd; border-radius: 4px;"):
                 with div(id="header-center", cls="", style="width: 100%; display: inline-block;"):
-                    h1("Report for rush : " + rush_data[1])
+                    h1("Report for rush : " + str(rush_data[1]))
                 with div(id="header-left", cls="", style="display: inline-block; width: 65%;"):
                     b("Tag : ")
-                    a(rush_data[4])
+                    a(str(rush_data[4]))
                     br()
                     b("Type : ")
-                    a(rush_data[3])
+                    a(str(rush_data[3]))
                     br()
                     b("Estimated duration : ")
-                    a(rush_data[5])
+                    a(str(rush_data[5]))
                 with div(id="header-right", cls="", style="display: inline-block; width: 34%;"):
                     b("Start at : ")
-                    a(rush_data[7])
+                    a(str(rush_data[7]))
                     br()
                     b("End at : ")
-                    a(rush_data[8])
+                    a(str(rush_data[8]))
                     br()
                     b("Duration : ")
-                    a(rush_data[9])
+                    a(str(rush_data[9]))
         with div(id="pdf_centent", cls="l-content"):
             with div(id="description", cls="description"):
                 with div(cls=""):
                     h3("Description : ", cls="description-head")
-                    p(rush_data[2], style="display: inline-block; width: 99%;")
+                    p(str(rush_data[2]), style="display: inline-block; width: 99%;")
             with div(id="graph", cls="graph pure-g"):
                 with div(cls="pure-u-1"):
                     h3("Graphs : ", cls="graphs-head")
                 with div(cls="pure-u-1-2", style="width:45%; display: inline-block;"):
                     # with div(cls="l-box"):
-                    img(src="/Users/dreadper/Git/1_Private_work/1_1_my_tools/rush_app/output/plots/plot1.png", width="1000px", height="350px")
+                    img(src="/Users/dreadper/Git/1_Private_work/1_1_my_tools/rush_app/output/plots/plot1.png", width="800px", height="350px")
             with div(id="tasks", cls="tasks pure-g"):
                 with div(cls="pure-u-1"):
                     h3("Tasks :", cls="tasks-head")
@@ -199,9 +205,9 @@ def create_html_report(rush_data, settings):
                         with tbody():
                             for task in task_list:
                                 with tr(cls="pure-table-odd"):
-                                    td(task[1])
-                                    td(task[2])
-                                    td(task[5])
+                                    td(str(task[1]))
+                                    td(str(task[2]))
+                                    td(str(task[5]))
                                     td(str(task[6]))
 
     # page 2
@@ -312,8 +318,8 @@ def create_html_report(rush_data, settings):
                     p(aar_data[1], style="display: inline-block; width: 99%;")
 
     # write result to html file
-    report_path1 = "output/reports/html/report_" + rush_id + "_" + date +"p1.html"
-    report_path2 = "output/reports/html/report_" + rush_id + "_" + date +"p2.html"
+    report_path1 = "output/reports/html/report_" + str(rush_id) + "_" + date +"p1.html"
+    report_path2 = "output/reports/html/report_" + str(rush_id) + "_" + date +"p2.html"
     page1 = open(report_path1, "w")
     page1.write((str(doc)))
     page2 = open(report_path2, "w")
@@ -322,11 +328,66 @@ def create_html_report(rush_data, settings):
 
     return report_path
 
+
+def create_global_report_graphs(settings):
+
+    # get data from settings
+    database_path = settings['database_path']
+
+    # test using context manager instead of classic try, except
+    with sqlite3.connect(database_path) as conn:
+        # get all achieved rush in db
+        c = conn.cursor()
+        achieved_rush = c.execute("SELECT * FROM rush WHERE achieved = ?", (True,)).fetchall()
+
+    ## Get Data :
+
+    # Total Rush achieved
+
+    # Total hours of work
+
+    ## Graphs Last Month :
+
+    # Graph total hour of work last Month
+
+    # Graph total rush last month
+
+    ## Graphs rush by :
+
+    # Graph by Type ('POC', 'Learning', 'Challenge')
+
+    # Graph by Tags (system, dev, network, ... )
+
+    # Graphs by duration (3/6/12 hours)
+
+    # # creating plot / graphs :
+    # graph_colors = ["#04aa6d","#aa0441", "#025f3d", "#03784d", "#03915d", "#04aa6d", "#05c37d", "#05dc8d", "#06f59d"]
+    # # Graph 1 : achieved task graph
+    # plt.figure(figsize=(6, 2))
+    # # subplot 1 : task achieved bar
+    # task_achieved_name = ['achieved task', 'unachieved task']
+    # task_achieved_name_value = [achieved_task_number[0], not_achieved_task_number[0]]
+    # plt.subplot(121)
+    # plt.pie(task_achieved_name_value, labels=task_achieved_name, colors=graph_colors, rotatelabels=True, wedgeprops = {'linewidth': 3})
+    # # subplot 2 : time managing
+    # time_value = [total_task_time, total_pause_time]
+    # time_label = ["work time", "pause time"]
+    # plt.subplot(122)
+    # plt.pie(time_value, labels=time_label, colors=graph_colors, rotatelabels=True, wedgeprops = {'linewidth': 3})
+
+    # # Graph 3 : Average time (duration) per task
+    
+    # # plt.subplot(133)
+    # # plt.plot(names, values)
+    # # plt.suptitle('Task Charts')
+    # plt.savefig('output/plots/plot1.png')
+
+
+
 def convert_html_to_pdf(rush_data, report_path):
-    rush_id = str(rush_data['id'])
     date = datetime.datetime.now()
     date = date.strftime('%d-%b-%Y')
-    pdf_report_path = "output/reports/pdf/report_" + rush_id + "_" + date +".pdf"    
+    pdf_report_path = "output/reports/pdf/report_" + str(rush_data[0]) + "_" + date +".pdf"    
     pdfkit.from_file(report_path, pdf_report_path, {'enable-local-file-access': True})
     return pdf_report_path
 

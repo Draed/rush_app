@@ -16,7 +16,8 @@ def databaseInit(database_path):
                 start_time TEXT,
                 end_time TEXT,
                 real_duration TEXT,
-                achieved BOOLEAN DEFAULT False NOT NULL
+                achieved BOOLEAN DEFAULT False NOT NULL,
+                markdown_path TEXT
                 );
             """)
     # task

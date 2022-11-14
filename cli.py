@@ -111,7 +111,7 @@ def DefineRushQuestion(database_path):
                 inquirer.List('duration', message="Duration of this rush",
                                     choices=['3 hours', '6 hours', '12 hours', '24 hours']),
                 inquirer.List('level', message="Choose the rush difficulty", 
-                                    choices=['Easy', 'Medium', 'Hard'])
+                                    choices=['easy', 'medium', 'hard'])
             ]
             answers2 = inquirer.prompt(question2)
             

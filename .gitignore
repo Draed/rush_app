@@ -14,5 +14,5 @@ build/
 *.egg-info/
 
 # specific for this project
-temp.py
 ressources
+temp/

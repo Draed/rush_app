@@ -86,7 +86,7 @@ else:
     # update rush's info
     conn = sqlite3.connect(database_path)
     c = conn.cursor()        
-    c.execute('UPDATE rush SET start_time=?, end_time=?, real_duration=?, achieved=?  WHERE id=?;', (str(rush_data['start_time']), str(rush_data['end_time']), str(rush_data['real_duration']), rush_data['achieved'],  rush_data['id']))
+    c.execute('UPDATE rush SET start_time=?, end_time=?, real_duration=?, achieved=?, markdown_path=?  WHERE id=?;', (str(rush_data['start_time']), str(rush_data['end_time']), str(rush_data['real_duration']), rush_data['achieved'], str(markdown_path),  rush_data['id']))
     conn.commit()
     conn.close()
 
