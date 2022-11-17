@@ -2,7 +2,43 @@
 
 ## Description
 
-A terminal (pyton) app for managing rush (my IT challenge limited in time).
+A terminal app (created with python) for managing rush [(my IT challenge limited in time)](https://github.com/Draed/rush/).
+
+Built with (modules dependancies):
+- cli_color_py (for colors)
+- inquirer (for cli)
+- sqlite3 (for ... sqlite)
+- dominate (for HTML, used as template for pdf report)
+- pdfkit (for creating pdf report)
+- matplotlib.pyplot (for plot and graphs)
+
+**OK but what does this app ?** 
+<br>
+It start a rush (a challenge, i.e : build a todolist app with flask in docker container) limited in time (by a countdown). It give me reminder after certain time to hydrate myself, do some stretch and globally having a healthy working session. After the countdown end (or when I finish all the tasks), the app generate a report in pdf for this rush and for all the rush, giving me statistics about what I learn, when, how often, how many pause I need, my concentration time,  ... which permit to improve my working methods (i.e : how lonf can I stay concentrated, how long  and how many pause, should I take ?)
+
+I use this app to manage my learning session during my free time.
+
+Some screenshot to illustrate the app : 
+
+- Menu at start : 
+![main menu at start](images/cap1_rush_app.png)
+
+- Menu during the rush :
+![menu during the rush](images/cap2_rush_app.png)
+
+
+Thind all my rush at : [rush repo](https://github.com/Draed/rush/)
+
+
+## Usage : 
+
+- With virtualenv (install dependancies and )
+```
+virtualenv -p python3 venv_rush_app && \
+source venv_rush_app/bin/activate && \
+pip install -r requirements.txt && \
+python main.py
+```
 
 ## Features 
 

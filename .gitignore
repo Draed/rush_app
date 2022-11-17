@@ -1,4 +1,5 @@
 # classic python ignore
+.DS_Store
 venv/
 
 *.pyc
