@@ -17,3 +17,4 @@ build/
 # specific for this project
 ressources
 temp/
+output/reports/html
