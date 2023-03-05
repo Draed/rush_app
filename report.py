@@ -15,7 +15,7 @@ def create_timeline(rush_data,settings):
     rush_id = rush_data[0]
     conn = sqlite3.connect(database_path)
     timeline_ordered_list = []
-    
+
     c = conn.cursor() 
     ## rush data
     rush_data = c.execute('SELECT * FROM rush WHERE id=?;', (rush_id,)).fetchone()
@@ -48,6 +48,11 @@ def create_timeline(rush_data,settings):
     return timeline_ordered_list
 
 def create_html_report(rush_data, settings):
+    
+    if isinstance(rush_data, dict):
+        rush_id = rush_data['id']
+    else:
+        rush_id = rush_data[0]
 
     # get data from settings
     database_path = settings['database_path']
@@ -55,7 +60,7 @@ def create_html_report(rush_data, settings):
     # get data from database
     conn = sqlite3.connect(database_path)
     c = conn.cursor()        
-    rush_id = rush_data[0]
+    
     ## rush data
     rush_data = c.execute('SELECT * FROM rush WHERE id=?;', (rush_id,)).fetchone()
     ## task data
@@ -98,7 +103,6 @@ def create_html_report(rush_data, settings):
     plt.subplot(121)
     plt.title('tasks status')
     task_achieved_name_value = [int(achieved_task_number[0]), int(not_achieved_task_number[0])]
-    print(task_achieved_name_value)
     task_achieved_name = ["achieved task", "unachieved task"]
     plt.pie(task_achieved_name_value, labels=task_achieved_name, colors=graph_colors, rotatelabels=True, wedgeprops = {'linewidth': 3})
     
@@ -115,6 +119,7 @@ def create_html_report(rush_data, settings):
     # plt.plot(names, values)
     # plt.suptitle('Task Charts')
     plt.savefig("output/plots/plot1.png")
+    plt.close()
 
     doc = dominate.document(title='Rush report : ' + str(rush_data[1]))
     timeline_page = dominate.document()

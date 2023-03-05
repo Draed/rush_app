@@ -44,8 +44,10 @@ python main.py
 
 ### TODO : 
 
+- Apply correction on bug which ask 2 times the launching question (start this rush right now ?)
+
 <!-- - make the endtime equal to rush endtime if not "end this rush right now" -->
-- add a currently working on task automatically to count time on it
+<!-- - add a currently working on task automatically to count time on it -->
 
 - graph achieved task per hour
 
